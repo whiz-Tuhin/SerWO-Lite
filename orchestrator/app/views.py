@@ -28,12 +28,7 @@ def execute_from_module(basepath, modulepath, nodename, request_input):
     if isinstance(request_input, list):
         serwo_object = build_serwo_list_object(request_input)
     elif isinstance(request_input, dict):
-        new_event = deepcopy(request_input)
-        event = dict(body=new_event)
-        event['metadata'] = dict(
-            info="Dummy metadata"
-        )
-        serwo_object = build_serwo_object(event)
+        serwo_object = build_serwo_object(request_input)
     else:
         return dict(
             statusCode=500,
@@ -44,8 +39,7 @@ def execute_from_module(basepath, modulepath, nodename, request_input):
     statusCode = 200
     try:
         # response = module.user_function(serwo_object)
-        response = mod.user_function(serwo_object) 
-        print("response here", response.to_json())
+        response = mod.user_function(serwo_object)
     except Exception as e:
         print(e)
         statusCode = 500
@@ -66,7 +60,6 @@ def execute(request):
     if request.method == 'POST':
         try:
             req_body = json.loads(request.body)
-            print(req_body)
             dag_description_path = req_body["path"]
             # populate the dict excluding path as a blacklist key
             data = dict()
@@ -83,7 +76,12 @@ def execute(request):
             last_response = None
             for v in top_sort_nodes:
                 if serwo_nx_dag.in_degree(v) == 0:
-                    out = execute_from_module(serwo_nx_dag.nodes[v]["Path"], serwo_nx_dag.nodes[v]["EntryPoint"], serwo_nx_dag.nodes[v]["NodeName"], req_body)
+                    event = dict(body=deepcopy(data))
+                    event['metadata'] = dict(
+                        info="Dummy metadata",
+                        functions=[]
+                    )
+                    out = execute_from_module(serwo_nx_dag.nodes[v]["Path"], serwo_nx_dag.nodes[v]["EntryPoint"], serwo_nx_dag.nodes[v]["NodeName"], event)
                 elif serwo_nx_dag.in_degree(v) == 1:
                     v_pred = list(serwo_nx_dag.predecessors(v))[0]
                     v_input = node_output_map[v_pred]

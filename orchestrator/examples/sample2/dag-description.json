@@ -1,0 +1,49 @@
+{
+    "WorkflowName": "SampleExample2",
+    "Nodes": [
+      {
+        "NodeId": "1",
+        "NodeName": "TaskA",
+        "Path": "examples/sample2/func1",
+        "EntryPoint": "func.py",
+        "CSP": "NA",
+        "MemoryInMB": 256
+      },
+      {
+        "NodeId": "2",
+        "NodeName": "TaskB",
+        "Path": "examples/sample2/func2",
+        "EntryPoint": "func.py",
+        "CSP": "NA",
+        "MemoryInMB": 256
+      },
+      {
+        "NodeId": "3",
+        "NodeName": "TaskC",
+        "Path": "examples/sample2/func3",
+        "EntryPoint": "func.py",
+        "CSP": "NA",
+        "MemoryInMB": 256
+      },
+      {
+        "NodeId": "4",
+        "NodeName": "TaskD",
+        "Path": "examples/sample2/func4",
+        "EntryPoint": "func.py",
+        "CSP": "NA",
+        "MemoryInMB": 256
+      }
+    ],
+    "Edges": [
+      {
+        "TaskA": ["TaskB", "TaskC"]
+      },
+      {
+        "TaskB": ["TaskD"]
+      },
+      {
+        "TaskC": ["TaskD"]
+      }
+    ]
+  }
+  
