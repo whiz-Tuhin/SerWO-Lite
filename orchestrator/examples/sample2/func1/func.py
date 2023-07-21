@@ -6,10 +6,6 @@ import json
 
 # XFaaS specific imports
 from python.src.utils.classes.commons.serwo_objects import SerWOObject
-from python.src.utils.classes.commons.serwo_objects import SerWOObject, SerWOObjectsList
-from python.src.utils.classes.commons.serwo_objects import build_serwo_object
-from python.src.utils.classes.commons.serwo_objects import build_serwo_list_object
-
 # User function (Add your logic here)
 def user_function(xfaas_object):
     try:

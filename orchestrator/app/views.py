@@ -6,7 +6,6 @@ from python.src.utils.classes.commons.serwo_objects import build_serwo_list_obje
 from copy import deepcopy
 
 import json
-import sys
 import networkx as nx
 import importlib.util
 
