@@ -12,9 +12,9 @@ import importlib
 node_output_map = dict()
 
 # routine to execute a user function python file
-def execute_from_module(basepath, moduleName, functionId, request_input):
-    module = importlib.import_module(f"{basepath}/{moduleName}")
-    print(f"Calling module {moduleName} for ID - {functionId}")
+def execute_from_module(basepath, modulepath, nodename, request_input):
+    module = importlib.import_module(f"{basepath}/{modulepath}")
+    print(f"Calling function {nodename}")
 
     if isinstance(request_input, list):
         serwo_object = build_serwo_list_object(request_input)
@@ -71,16 +71,16 @@ def execute(request):
             # execute based on the top sort nodes
             for v in top_sort_nodes:
                 if serwo_nx_dag.in_degree(v) == 0:
-                    out = execute_from_module("user_function", serwo_nx_dag[v]["Path"], req_body)
+                    out = execute_from_module(dag_description_path, serwo_nx_dag[v]["Path"], serwo_nx_dag[v]["NodeName"], req_body)
                 elif serwo_nx_dag.in_degree(v) == 1:
                     v_pred = serwo_nx_dag.predecessors(v)[0]
                     v_input = node_output_map[v_pred]
-                    out = execute_from_module("user_function", serwo_nx_dag[v]["Path"], v_input)
+                    out = execute_from_module(dag_description_path , serwo_nx_dag[v]["Path"], serwo_nx_dag[v]["NodeName"], v_input)
                 else:
                     v_input_list = []
                     for v_pred in serwo_nx_dag.predecessors(v):
                         v_input_list.append(node_output_map[v_pred])
-                    out = execute_from_module("user_function", serwo_nx_dag[v]["Path"], v_input_list)
+                    out = execute_from_module(dag_description_path , serwo_nx_dag[v]["Path"], serwo_nx_dag[v]["NodeName"], v_input_list)
                 
                 # return a response in case of failure
                 if out["statusCode"] == 500:
