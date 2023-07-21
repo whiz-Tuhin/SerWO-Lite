@@ -1,0 +1,50 @@
+{
+    "StartAt": "SerwoFunction1",
+    "States": {
+        "SerwoFunction1": {
+            "Type": "Task",
+            "Next": "SerwoFunction2",
+            "Resource": "${SerwoFunction1Arn}",
+            "Retry": [
+                {
+                    "ErrorEquals": [
+                        "States.TaskFailed"
+                    ],
+                    "IntervalSeconds": 15,
+                    "MaxAttempts": 5,
+                    "BackoffRate": 1.5
+                }
+            ]
+        },
+        "SerwoFunction2": {
+            "Type": "Task",
+            "Next": "SerwoFunction3",
+            "Resource": "${SerwoFunction2Arn}",
+            "Retry": [
+                {
+                    "ErrorEquals": [
+                        "States.TaskFailed"
+                    ],
+                    "IntervalSeconds": 15,
+                    "MaxAttempts": 5,
+                    "BackoffRate": 1.5
+                }
+            ]
+        },
+        "SerwoFunction3": {
+            "Type": "Task",
+            "Resource": "${SerwoFunction3Arn}",
+            "Retry": [
+                {
+                    "ErrorEquals": [
+                        "States.TaskFailed"
+                    ],
+                    "IntervalSeconds": 15,
+                    "MaxAttempts": 5,
+                    "BackoffRate": 1.5
+                }
+            ],
+            "End": true
+        }
+    }
+}

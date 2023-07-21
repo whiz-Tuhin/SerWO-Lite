@@ -1,0 +1,51 @@
+{
+    "Comment": "State machine for serwo sample cli deployment",
+    "StartAt": "SerwoFunction1",
+    "States": {
+        "SerwoFunction1": {
+            "Type": "Task",
+            "Resource": "${SerwoFunction1Arn}",
+            "Retry": [
+                {
+                    "ErrorEquals": [
+                        "States.TaskFailed"
+                    ],
+                    "IntervalSeconds": 15,
+                    "MaxAttempts": 5,
+                    "BackoffRate": 1.5
+                }
+            ],
+            "Next": "SerwoFunction2"
+        },
+        "SerwoFunction2": {
+            "Type": "Task",
+            "Resource": "${SerwoFunction2Arn}",
+            "Retry": [
+                {
+                    "ErrorEquals": [
+                        "States.TaskFailed"
+                    ],
+                    "IntervalSeconds": 15,
+                    "MaxAttempts": 5,
+                    "BackoffRate": 1.5
+                }
+            ],
+            "Next": "SerwoFunction3"
+        },
+        "SerwoFunction3": {
+            "Type": "Task",
+            "Resource": "${SerwoFunction3Arn}",
+            "Retry": [
+                {
+                    "ErrorEquals": [
+                        "States.TaskFailed"
+                    ],
+                    "IntervalSeconds": 15,
+                    "MaxAttempts": 5,
+                    "BackoffRate": 1.5
+                }
+            ],
+            "End": true
+        }
+    }
+}

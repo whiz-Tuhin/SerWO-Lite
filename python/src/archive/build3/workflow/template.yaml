@@ -1,0 +1,63 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  stepfunctions-template
+  Sample SAM Template for stepfunctions-template
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Tracing: Active
+  Api:
+    TracingEnabled: True
+Outputs:
+  TestStateMachineNameArn:
+    Description: "Serwo CLI State machine ARN"
+    Value: !Ref TestStateMachineName
+  TestStateMachineNameRoleArn:
+    Description: "IAM Role created for Serwo CLI State machine based on the specified SAM Policy Templates"
+    Value: !GetAtt TestStateMachineNameRole.Arn
+Resources:
+  TestStateMachineName:
+    Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
+    Properties:
+      DefinitionUri: statemachine.asl.json
+      DefinitionSubstitutions:
+        SerwoFunction1Arn: !GetAtt SerwoFunction1.Arn
+        SerwoFunction2Arn: !GetAtt SerwoFunction2.Arn
+        SerwoFunction3Arn: !GetAtt SerwoFunction3.Arn
+        
+
+      Policies: # Find out more about SAM policy templates: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SerwoFunction1
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SerwoFunction2
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SerwoFunction3
+        
+
+  SerwoFunction1:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/func1
+      Handler: standalone_func1_runner.lambda_handler
+      Runtime: python3.8
+      Architectures:
+        - x86_64
+  SerwoFunction2:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/func2
+      Handler: standalone_func2_runner.lambda_handler
+      Runtime: python3.8
+      Architectures:
+        - x86_64
+  SerwoFunction3:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/func3
+      Handler: standalone_func3_runner.lambda_handler
+      Runtime: python3.8
+      Architectures:
+        - x86_64
+  

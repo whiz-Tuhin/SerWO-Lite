@@ -1,0 +1,89 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  stepfunctions-template
+
+  Sample SAM Template for stepfunctions-template
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Tracing: Active
+  Api:
+    TracingEnabled: True
+
+Resources:
+  SerwoCLIStateMachine:
+    Type: AWS::Serverless::StateMachine # More info about State Machine Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-statemachine.html
+    Properties:
+      DefinitionUri: statemachine/stock_trader.asl.json
+      DefinitionSubstitutions:
+        SerwoFunction1Arn: !GetAtt SerwoFunction1.Arn
+        SerwoFunction2Arn: !GetAtt SerwoFunction2.Arn
+        SerwoFunction3Arn: !GetAtt SerwoFunction3.Arn
+        # DDBPutItem: !Sub arn:${AWS::Partition}:states:::dynamodb:putItem
+        # DDBTable: !Ref TransactionTable
+      # Events:
+      #   HourlyTradingSchedule:
+      #     Type: Schedule # More info about Schedule Event Source: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-property-statemachine-schedule.html
+      #     Properties:
+      #       Description: Schedule to run the stock trading state machine every hour
+      #       Enabled: False # This schedule is disabled by default to avoid incurring charges.
+      #       Schedule: "rate(1 hour)"
+      Policies: # Find out more about SAM policy templates: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/serverless-policy-templates.html
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SerwoFunction1
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SerwoFunction2
+        - LambdaInvokePolicy:
+            FunctionName: !Ref SerwoFunction3
+        # - DynamoDBWritePolicy:
+            # TableName: !Ref TransactionTable
+
+  SerwoFunction1:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-function.html
+    Properties:
+      CodeUri: functions/func1/
+      Handler: standalone_func1_runner.lambda_handler
+      Runtime: python3.8
+      Architectures:
+        - x86_64
+
+  SerwoFunction2:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/func2/
+      Handler: standalone_func2_runner.lambda_handler
+      Runtime: python3.8
+      Architectures:
+        - x86_64
+
+  SerwoFunction3:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: functions/func3/
+      Handler: standalone_func3_runner.lambda_handler
+      Runtime: python3.8
+      Architectures:
+        - x86_64
+
+  # TransactionTable:
+  #   Type: AWS::Serverless::SimpleTable # More info about SimpleTable Resource: https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-resource-simpletable.html
+  #   Properties:
+  #     PrimaryKey:
+  #       Name: Id
+  #       Type: String
+  #     ProvisionedThroughput:
+  #       ReadCapacityUnits: 1
+  #       WriteCapacityUnits: 1
+
+Outputs:
+  # StockTradingStateMachineHourlyTradingSchedule is an implicit Schedule event rule created out of Events key under Serverless::StateMachine
+  # Find out more about other implicit resources you can reference within SAM
+  # https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/sam-specification-generated-resources.html
+  SerwoCLIStateMachineArn:
+    Description: "Serwo CLI State machine ARN"
+    Value: !Ref SerwoCLIStateMachine
+  SerwoCLIStateMachineRoleArn:
+    Description: "IAM Role created for Serwo CLI State machine based on the specified SAM Policy Templates"
+    Value: !GetAtt SerwoCLIStateMachineRole.Arn

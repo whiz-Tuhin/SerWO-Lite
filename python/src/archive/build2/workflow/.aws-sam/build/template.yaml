@@ -1,0 +1,82 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: 'stepfunctions-template
+
+  Sample SAM Template for stepfunctions-template
+
+  '
+Globals:
+  Function:
+    Tracing: Active
+  Api:
+    TracingEnabled: true
+Resources:
+  SerwoCLISMAutomationTest:
+    Type: AWS::Serverless::StateMachine
+    Properties:
+      DefinitionUri: ../../statemachine/serwo-sample.asl.json
+      DefinitionSubstitutions:
+        SerwoFunction1Arn:
+          Fn::GetAtt:
+          - SerwoFunction1
+          - Arn
+        SerwoFunction2Arn:
+          Fn::GetAtt:
+          - SerwoFunction2
+          - Arn
+        SerwoFunction3Arn:
+          Fn::GetAtt:
+          - SerwoFunction3
+          - Arn
+      Policies:
+      - LambdaInvokePolicy:
+          FunctionName:
+            Ref: SerwoFunction1
+      - LambdaInvokePolicy:
+          FunctionName:
+            Ref: SerwoFunction2
+      - LambdaInvokePolicy:
+          FunctionName:
+            Ref: SerwoFunction3
+  SerwoFunction1:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: SerwoFunction1
+      Handler: standalone_func1_runner.lambda_handler
+      Runtime: python3.8
+      Architectures:
+      - x86_64
+    Metadata:
+      SamResourceId: SerwoFunction1
+  SerwoFunction2:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: SerwoFunction2
+      Handler: standalone_func2_runner.lambda_handler
+      Runtime: python3.8
+      Architectures:
+      - x86_64
+    Metadata:
+      SamResourceId: SerwoFunction2
+  SerwoFunction3:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: SerwoFunction3
+      Handler: standalone_func3_runner.lambda_handler
+      Runtime: python3.8
+      Architectures:
+      - x86_64
+    Metadata:
+      SamResourceId: SerwoFunction3
+Outputs:
+  SerwoCLISMAutomationTestArn:
+    Description: Serwo CLI State machine ARN
+    Value:
+      Ref: SerwoCLISMAutomationTest
+  SerwoCLISMAutomationTestRoleArn:
+    Description: IAM Role created for Serwo CLI State machine based on the specified
+      SAM Policy Templates
+    Value:
+      Fn::GetAtt:
+      - SerwoCLISMAutomationTestRole
+      - Arn
